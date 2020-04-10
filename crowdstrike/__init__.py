@@ -1,71 +1,171 @@
+""" downloads the latest versions of the crowdstrike endpoint tools, 
+then uploads them in standard filename formats to our S3 bucket.
+
+"""
+
 import json
-import logging
-import requests
+import sys
+import time
 
-BASEURL = 'https://api.crowdstrike.com'
 
-class Token(object):
+try:
+    from loguru import logger
+    import requests_oauthlib
+    from oauthlib.oauth2 import BackendApplicationClient, TokenExpiredError
+except ImportError as importerror:
+    sys.exit(f"Failed to import a dependency, quitting. Error: {importerror}")
+
+API_BASEURL = "https://api.crowdstrike.com"
+
+
+class CrowdstrikeAPI:
     def __init__(self, client_id, client_secret):
-        self.__client_id = client_id
-        self.__client_secret = client_secret
-        self.access_token = None
-        self.expires_in = -1
-
-        self.ratelimit_limit = -1
-        self.ratelimit_remaining = -1
-
-    def get_token(self, force_get=True):
-        """ gets the token, updates the local data and returns the token 
-            if the token already exists and has 30 seconds to go in life, just return it
-            else grab the token, update the store and return it
-            https://assets.falcon.crowdstrike.com/support/api/swagger.html#/oauth2/oauth2AccessToken
+        """ handles some of the crowdstrike API endpoints
+        
         """
+        self.client_id = client_id
+        self.client_secret = client_secret
+        
+        self.client = BackendApplicationClient(client_id=client_id)
+        
+        self.oauth = requests_oauthlib.OAuth2Session(client=self.client)
+        
+        #grab a token to start with
+        self.get_token()
 
-        # TODO: deal with the rate limiting... somehow
-        if self.access_token and self.expires_in > 30:
-            return self.access_token
-        else:
-            url = f'{BASEURL}/oauth2/token'
-            headers = {
-                'accept' : 'application/json',
-                'Content-Type' : 'application/x-www-form-urlencoded',
-            }
+    def get_token(self):
+        logger.debug("Requesting auth token")
+        self.token = self.oauth.fetch_token(
+            token_url=f"{API_BASEURL}/oauth2/token", 
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+        )
 
-            data = {
-                'client_id' : self.__client_id,
-                'client_secret' : self.__client_secret,
-            }
-
-            try:
-                response = requests.post(url, headers=headers, data=data)
-                response.raise_for_status()
-                data = response.json()
-                self.access_token = data['access_token']
-                self.expires_in = data['expires_in']
-
-                self.ratelimit_limit = response.headers['X-Ratelimit-Limit']
-                self.ratelimit_remaining = response.headers['X-Ratelimit-Remaining']
-                return self.access_token
-            except requests.exceptions.HTTPError:
-                error_data = json.loads(response.text)
-                logging.error("Token fetch error: %s", json.dumps(error_data['errors']))
-                return False
-
-class CrowdStrikeAPI(object):
-    def __init__(self, token):
-        self.__token = token
-
-    def get_event_streams(self, appid, format='json'):
-        """ DIscover all event streams in your environment 
-
+    def get_event_streams(self, appid : str, partition : str = None):
+        """ 
+        Discover all event streams in your environment 
         https://assets.falcon.crowdstrike.com/support/api/swagger.html#/event-streams/listAvailableStreamsOAuth2
         """
-        url = f'{BASEURL}/sensors/entities/datafeed/v2?appId={appid}'
-        headers = {
-            'accept' : 'application/json',
-            'Authorization' : f"Bearer {self.__token.get_token()}",
-            # 'Content-Type' : 'application/x-www-form-urlencoded',
-        }
+        #url = f'/sensors/entities/datafeed/v2?appId={appid}'
+        uri = '/sensors/entities/datafeed-actions/v1/'
+        if partition:
+            uri = f'{uri}{partition}'
 
-        response = requests.get(url, headers=headers)
-        return response.text
+        response = self.request(
+            uri=uri, 
+            request_method='get',
+            )
+        return response.json()
+        
+    def get_ccid(self):
+        """ returns the CCID for installers """
+        req = self.request("/sensors/queries/installers/ccid/v1")
+        req.raise_for_status()
+
+        # TODO: actually make this handle errors
+        if req.status_code == 200:
+            return req.json().get('resources')[0]
+        else:
+            return False
+    
+    def get_latest_sensor_id(self, filter_string : str=""):
+        """ returns the ids of the latest sensor IDs
+        
+            suggested filter: 'platform:mac' or 'platform:windows'
+        """
+        response = self.get_sensor_installer_ids(
+            sort_string="release_date|desc",
+            filter_string="platform:mac",
+        )
+        if response:
+            return response[0]
+        else:
+            return False
+    
+    def get_sensor_installer_ids(self, sort_string : str="", filter_string : str=""):
+        """ 
+        returns a list of installer IDs, they're a list of SHA256's
+        """
+        uri = '/sensors/queries/installers/v1'
+        
+        data = {
+            'sort' : sort_string,
+            'filter' : filter_string,
+        }
+        response = self.request(uri, data=data)
+        response.raise_for_status()
+        
+        # TODO: handle pagination
+        return response.json().get('resources', False)
+    
+    def get_sensor_installer_details(self, sensorid : str):
+        """
+        returns a dict about a particular sensor ID, or False if it can't find anything useful
+        """
+        logger.debug(f"Sensor ID: {sensorid}")
+        uri = f"/sensors/entities/installers/v1?ids={sensorid}"
+        #data = {
+        #    'ids' : sensorid
+        #}
+        response = self.request(
+            uri=uri,
+            request_method='get',
+            #data=data,
+        )
+        
+        response.raise_for_status()
+        logger.debug(response.headers)
+        if not response.json().get('resources', False):
+            return False
+        else:
+            return response.json().get('resources', False)[0]
+    
+    def download_sensor(self, sensorid : str, destination_filename : str):
+        """ downloads a sensor id to the filename """
+        # TODO: actually check we can write to the destination_filename before we try downloading it
+        uri = f'/sensors/entities/download-installer/v1?id={sensorid}'
+        
+        response = self.request(
+            uri=uri,
+            request_method='get',
+        )
+        logger.debug(response.headers)
+        response.raise_for_status()
+        
+        logger.debug(f"Writing intaller to {destination_filename}")
+        with open(destination_filename, 'wb') as fh:
+            fh.write(response.content)
+            
+        return response.json()
+
+
+    def do_request(self, uri : str, data : dict={}, request_method : str=None):
+        """ does the request, this allows a single code implementation for 
+            the duplicated calls in self.request() 
+            
+            default request method is get
+        """
+        if not request_method:
+            request_method = 'get'
+        return self.oauth.request(request_method, f"{API_BASEURL}{uri}")
+    
+    def request(self, uri : str, request_method : str=None, data : dict={}):
+        """ does a request 
+        
+        request_method is a string, either get / post / delete etc
+            default is set in self.do_request()
+        """
+        # TODO: handle rate limiting
+        # Requests will return the following headers:
+        # X-RateLimit-Limit : Request limit per minute. type = integer
+        # X-RateLimit-Remaining : The number of requests remaining for the sliding one minute window. type = integer
+
+        try:
+            req =  self.do_request(uri=uri, request_method=request_method, data=data)
+        except TokenExpiredError as e:
+            logger.debug("Token's expired, grabbing a new one")
+            self.token = self.get_token()
+            req =  self.do_request(uri=uri, request_method=request_method, data=data)
+
+            req.raise_for_status()
+        return req

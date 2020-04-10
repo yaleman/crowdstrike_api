@@ -6,7 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-requests = "*"
+requests-oauthlib = "*"
+loguru = "*"
 
 [requires]
 python_version = "3.7"
