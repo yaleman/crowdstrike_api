@@ -4,9 +4,9 @@ then uploads them in standard filename formats to our S3 bucket.
 """
 
 import json
+import os
 import sys
 import time
-
 
 try:
     from loguru import logger
@@ -16,6 +16,10 @@ except ImportError as importerror:
     sys.exit(f"Failed to import a dependency, quitting. Error: {importerror}")
 
 API_BASEURL = "https://api.crowdstrike.com"
+
+# if you want to enable logging then you can just run `logger.enable("crowdstrike")` in your code.
+logger.disable('crowdstrike')
+
 
 
 class CrowdstrikeAPI:

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm dist/*
+echo "Building"
+pipenv run python setup.py sdist bdist_wheel
+echo "Uploading to pip"
+pipenv run python -m twine upload dist/*

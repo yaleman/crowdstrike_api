@@ -12,6 +12,8 @@ try:
 except ImportError as import_error:
     sys.exit(f"Error importing required library: {import_error}")
 
+logger.enable("crowdstrike")
+
 crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
 # find the crowdstrike mac ids
@@ -30,7 +32,7 @@ ids = crowdstrike.get_sensor_installer_ids(
     sort_string="release_date|desc",
     filter_string="platform:mac",
 )
-logger.debug(
+logger.info(
     json.dumps(
         crowdstrike.get_sensor_installer_details(ids[0]),
         indent=2
@@ -40,16 +42,16 @@ logger.debug(
 # test downloading the latest macOS installer
 # this'll write it to a temporary directory which is removed afterwards
 maclatest = crowdstrike.get_latest_sensor_id(filter_string='platform:mac')
-logger.debug(
+logger.info(
     json.dumps(
         crowdstrike.get_sensor_installer_details(maclatest),
         indent=2
     )
 )
-logger.debug("Testing download to temporary directory....")
+logger.info("Testing download to temporary directory....")
 with tempfile.TemporaryDirectory() as tmpdirname:
     filename = f'{tmpdirname}/FalconSensorMacOS.pkg'
     response = crowdstrike.download_sensor(maclatest, filename)
     if not os.path.exists(filename):
         raise ValueError(f'Failed to download file :(')
-logger.debug("Download looks to have worked!")
+logger.info("Download looks to have worked!")
