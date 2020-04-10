@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import time
+import errno
 
 try:
     from loguru import logger
@@ -24,7 +25,10 @@ logger.disable('crowdstrike')
 
 class CrowdstrikeAPI:
     """ Crowdstrike API """
-    def __init__(self, client_id, client_secret):
+    def __init__(self,
+                 client_id,
+                 client_secret,
+                 api_baseurl: str = API_BASEURL):
         """ starts up the CrowdstrikeAPI module Needs two strings,
         the client_id and client_secret, available from
         https://falcon.crowdstrike.com/support/api-clients-and-keys
@@ -35,6 +39,7 @@ class CrowdstrikeAPI:
         self.oauth = requests_oauthlib.OAuth2Session(client=self.client)
         #grab a token to start with
         self.token = self.get_token()
+        self.api_baseurl = api_baseurl
 
     def get_token(self):
         """ Gets the latest auth token and returns it. """
@@ -70,7 +75,6 @@ class CrowdstrikeAPI:
         req = self.request(request_method='get', uri="/sensors/queries/installers/ccid/v1")
         req.raise_for_status()
 
-        # TODO: actually make this handle errors
         if req.status_code == 200:
             retval = req.json().get('resources')[0]
         else:
@@ -95,14 +99,14 @@ class CrowdstrikeAPI:
         """
         returns a list of installer IDs, they're a list of SHA256's
         """
-        logger.debug(f"get_sensor_installer_ids() called, sort_string: '{sort_string}', filter_string: '{filter_string}'")
+        logger.debug(f"get_sensor_installer_ids() called, sort_string: '{sort_string}', filter_string: '{filter_string}'") # pylint: disable=line-too-long
         uri = '/sensors/queries/installers/v1'
 
         data = {
             'sort' : sort_string,
             'filter' : filter_string,
         }
- 
+
         response = self.request(request_method='get', uri=uri, data=data)
         #logger.debug(response.json())
         logger.debug("Request headers")
@@ -123,7 +127,10 @@ class CrowdstrikeAPI:
         data = {
             'ids' : sensorid,
             }
-        response = self.request(uri=uri,request_method='get',data=data)
+        response = self.request(uri=uri,
+                                request_method='get',
+                                data=data,
+                                )
 
         response.raise_for_status()
         logger.debug(response.headers)
@@ -135,33 +142,40 @@ class CrowdstrikeAPI:
 
     def download_sensor(self, sensorid: str, destination_filename: str):
         """ downloads a sensor id to the filename """
-        # TODO: actually check we can write to the destination_filename before we try downloading it
         uri = f'/sensors/entities/download-installer/v1'
         data = {
             'id' : sensorid,
         }
-        response = self.request(
-            uri=uri,
-            request_method='get',
-            data=data,
-        )
-        logger.debug(response.headers)
-        response.raise_for_status()
+        try:
+            logger.debug(f"Writing intaller to {destination_filename}")
+            with open(destination_filename, 'wb') as file_handle:
+                response = self.request(
+                    uri=uri,
+                    request_method='get',
+                    data=data,
+                )
+                logger.debug(response.headers)
+                response.raise_for_status()
 
-        logger.debug(f"Writing intaller to {destination_filename}")
-        with open(destination_filename, 'wb') as file_handle:
-            file_handle.write(response.content)
-        return True
+                file_handle.write(response.content)
+            return True
 
-    def do_request(self, uri : str, data : dict={}, request_method : str=None):
-        """ does the request, this allows a single code implementation for 
-            the duplicated calls in self.request() 
-            
+        except IOError as file_write_error:
+            if file_write_error.errno == errno.EACCES:
+                logger.error(f"error {file_write_error.errno}, {file_write_error.strerror} - Permission fail")
+            elif file_write_error.errno == errno.EISDIR:
+                logger.error(f"error {file_write_error.errno}, {file_write_error.strerror} - Path is a directory")
+            else:
+                logger.error(f"error {file_write_error.errno}, {file_write_error.strerror}")
+            return False
+
+    def do_request(self, uri: str, data: dict, request_method: str = 'get'):
+        """ does the request, this allows a single code implementation for
+            the duplicated calls in self.request()
+
             default request method is get
         """
         fulluri = f"{API_BASEURL}{uri}"
-        if not request_method:
-            request_method = 'get'
         if request_method.lower() == 'get' and data:
             response = self.oauth.request(request_method, fulluri, params=data)
         else:
