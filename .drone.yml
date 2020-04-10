@@ -8,4 +8,4 @@ steps:
   commands:
   - pip install pipenv
   - pipenv install --dev
-  - pipenv run pytest crowdstrike
+  - pipenv run pylint crowdstrike
