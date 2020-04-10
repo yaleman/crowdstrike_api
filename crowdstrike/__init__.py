@@ -17,7 +17,7 @@ except ImportError as importerror:
 
 API_BASEURL = "https://api.crowdstrike.com"
 
-# if you want to enable logging then you can just run `logger.enable("crowdstrike")` in your code.
+# if you want to enable logging then you can just run logger.enable("crowdstrike") in your code.
 logger.disable('crowdstrike')
 
 
