@@ -16,39 +16,31 @@ logger.enable("crowdstrike")
 
 crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
-# find the crowdstrike mac ids
+# find a few different crowdstrike ids
 ids = crowdstrike.get_sensor_installer_ids(
     sort_string="release_date|desc",
-    filter_string="platform:mac",
+    filter_string='platform:"mac"'
 )
-logger.info(
-    json.dumps(
-        ids, 
-        indent=2
-    )[:150] # limit the response to 150 chars
-)
-# grabbing a single installer's information
 ids = crowdstrike.get_sensor_installer_ids(
     sort_string="release_date|desc",
-    filter_string="platform:mac",
 )
-logger.info(
-    json.dumps(
-        crowdstrike.get_sensor_installer_details(ids[0]),
-        indent=2
-    )
+ids = crowdstrike.get_sensor_installer_ids(
+    filter_string='platform:"mac"'
 )
 
+
 # test downloading the latest macOS installer
-# this'll write it to a temporary directory which is removed afterwards
-maclatest = crowdstrike.get_latest_sensor_id(filter_string='platform:mac')
+maclatest = crowdstrike.get_latest_sensor_id(filter_string='platform:"mac"')
 logger.info(
     json.dumps(
+        # also tests showing an installer's data
         crowdstrike.get_sensor_installer_details(maclatest),
         indent=2
     )
 )
+
 logger.info("Testing download to temporary directory....")
+# this'll write it to a temporary directory which is removed afterwards
 with tempfile.TemporaryDirectory() as tmpdirname:
     filename = f'{tmpdirname}/FalconSensorMacOS.pkg'
     response = crowdstrike.download_sensor(maclatest, filename)

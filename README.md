@@ -1,6 +1,6 @@
 # Crowdstrike API
 
-Implements some of the functions to interface with the Crowdstrike APIs.
+Implements some of the functions to interface with the [Crowdstrike APIs](https://assets.falcon.crowdstrike.com/support/api/swagger.html).
 
 Want to contribute? Log an issue or PR on the Repo.
 
