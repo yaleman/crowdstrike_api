@@ -3,8 +3,9 @@ type: docker
 name: crowdstrike
 
 steps:
-- name: greeting
-  image: alpine
+- name: pytest
+  image: python:3.7
   commands:
-  - echo hello
-  - echo world
+  - pip install pipenv
+  - pipenv install --dev
+  - pipenv run pytest crowdstrike
