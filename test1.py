@@ -51,5 +51,5 @@ with tempfile.TemporaryDirectory() as tmpdirname:
     filename = f'{tmpdirname}/FalconSensorMacOS.pkg'
     response = crowdstrike.download_sensor(maclatest, filename)
     if not os.path.exists(filename):
-        raise ValueError(f'Failed to download file :(]\n{json.dumps(response)}')
+        raise ValueError(f'Failed to download file :(')
 logger.debug("Download looks to have worked!")

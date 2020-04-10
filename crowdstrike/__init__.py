@@ -135,8 +135,8 @@ class CrowdstrikeAPI:
         logger.debug(f"Writing intaller to {destination_filename}")
         with open(destination_filename, 'wb') as fh:
             fh.write(response.content)
-            
-        return response.json()
+        
+        return True
 
 
     def do_request(self, uri : str, data : dict={}, request_method : str=None):
