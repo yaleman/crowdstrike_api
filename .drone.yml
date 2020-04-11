@@ -6,10 +6,11 @@ steps:
 - name: pytest
   image: python:3.7
   commands:
-  - pip install --quiet pipenv
-  - pipenv install --dev
+  #- pip install --quiet pipenv
+  #- pipenv install --dev
   - echo CLIENT_ID = "$CLIENT_ID" > config.py
-  - pipenv run pylint --disable=W0511 crowdstrike
+  - cat config.py
+  #- pipenv run pylint --disable=W0511 crowdstrike
   environment:
     CLIENT_ID:
       from_secret: CLIENT_ID
