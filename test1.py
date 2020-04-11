@@ -8,18 +8,25 @@ import tempfile
 try:
     from loguru import logger
     from crowdstrike import CrowdstrikeAPI
-    from config import CLIENT_ID, CLIENT_SECRET
 except ImportError as import_error:
     sys.exit(f"Error importing required library: {import_error}")
 
+# grab config from the file or environment variable
+try:
+    from config import CLIENT_ID, CLIENT_SECRET
+except ImportError:
+    if os.environ.get('CLIENT_ID'):
+        logger.debug("Using Client ID from environment variable")
+        CLIENT_ID = os.environ.get('CLIENT_ID')
+    if os.environ.get('CLIENT_SECRET'):
+        logger.debug("Using Client Secret from environment variable")
+        CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+    if not CLIENT_ID and not CLIENT_SECRET:
+        sys.exit("you didn't set the config either via file or environment")
+
 logger.enable("crowdstrike")
 
-# if os.environ.get('CLIENT_ID'):
-#     logger.debug("Using Client ID from environment variable")
-#     CLIENT_ID = os.environ.get('CLIENT_ID')
-# if os.environ.get('CLIENT_SECRET'):
-#     logger.debug("Using Client Secret from environment variable")
-#     CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+
 
 crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
