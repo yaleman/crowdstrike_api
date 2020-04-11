@@ -16,7 +16,7 @@ steps:
   - pip install --quiet pipenv
   - pipenv install --dev
   - echo "CLIENT_ID = \"$CLIENT_ID\"" > config.py
-  - echo "CLIENT_SECRET = \"$CLIENT_SECRET\"" > config.py
+  - echo "CLIENT_SECRET = \"$CLIENT_SECRET\"" >> config.py
   - pipenv run python3 test1.py
   environment:
     CLIENT_ID:
