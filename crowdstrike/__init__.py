@@ -192,8 +192,10 @@ class CrowdstrikeAPI:
         """
         # TODO: handle rate limiting
         # Requests will return the following headers:
-        # X-RateLimit-Limit : Request limit per minute. type = integer
-        # X-RateLimit-Remaining : The number of requests remaining for the sliding one minute window. type = integer
+        # X-RateLimit-Limit : Request limit per minute.
+        #   type = integer
+        # X-RateLimit-Remaining : The number of requests remaining for the sliding 1 minute window.
+        #   type = integer
         logger.debug(f"request(uri='{uri}', request_method='{request_method}', data='{data}'")
         try:
             req = self.do_request(uri=uri,
