@@ -3,14 +3,21 @@ type: docker
 name: crowdstrike
 
 steps:
-- name: pytest
+# - name: pylint
+#   image: python:3.7
+#   commands:
+#   - pip install --quiet pipenv
+#   - pipenv install --dev
+#   # W0511 = TODO
+#   - pipenv run pylint --disable=W0511 crowdstrike 
+- name: test1
   image: python:3.7
   commands:
-  #- pip install --quiet pipenv
-  #- pipenv install --dev
+  - pip install --quiet pipenv
+  - pipenv install --dev
   - echo CLIENT_ID = "$CLIENT_ID" > config.py
-  - cat config.py
-  #- pipenv run pylint --disable=W0511 crowdstrike
+  - echo CLIENT_SECRET = "$CLIENT_SECRET" > config.py
+  - pipenv run python3 test1.py
   environment:
     CLIENT_ID:
       from_secret: CLIENT_ID
