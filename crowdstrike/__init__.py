@@ -161,12 +161,14 @@ class CrowdstrikeAPI:
             return True
 
         except IOError as file_write_error:
-            if file_write_error.errno == errno.EACCES:
-                logger.error(f"error {file_write_error.errno}, {file_write_error.strerror} - Permission fail")
-            elif file_write_error.errno == errno.EISDIR:
-                logger.error(f"error {file_write_error.errno}, {file_write_error.strerror} - Path is a directory")
+            error_number = file_write_error.errno
+            error_string = file_write_error.strerror
+            if error_number == errno.EACCES:
+                logger.error(f"error {error_number}, {error_string} - Permission fail")
+            elif error_number == errno.EISDIR:
+                logger.error(f"error {error_number}, {error_string} - Path is a directory")
             else:
-                logger.error(f"error {file_write_error.errno}, {file_write_error.strerror}")
+                logger.error(f"error {error_number}, {error_string}")
             return False
 
     def do_request(self, uri: str, data: dict, request_method: str = 'get'):
