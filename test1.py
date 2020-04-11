@@ -14,6 +14,13 @@ except ImportError as import_error:
 
 logger.enable("crowdstrike")
 
+# if os.environ.get('CLIENT_ID'):
+#     logger.debug("Using Client ID from environment variable")
+#     CLIENT_ID = os.environ.get('CLIENT_ID')
+# if os.environ.get('CLIENT_SECRET'):
+#     logger.debug("Using Client Secret from environment variable")
+#     CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+
 crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
 # find a few different crowdstrike ids
