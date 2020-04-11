@@ -8,4 +8,4 @@ steps:
   commands:
   - pip install pipenv
   - pipenv install --dev
-  - pipenv run pylint crowdstrike
+  - pipenv run pylint --disable=W0511 crowdstrike
