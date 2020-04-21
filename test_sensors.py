@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+""" terrible tests for the sensors endpoints """
 import json
 import os
 import sys
@@ -28,6 +28,9 @@ logger.enable("crowdstrike")
 
 
 def test_really_replace_this_with_a_real_test():
+    """ terrible test, replace it with something not-terrible """
+
+    # TODO: make this some vaguely correct tests
     crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
     # find a few different crowdstrike ids
@@ -62,5 +65,6 @@ def test_really_replace_this_with_a_real_test():
     with tempfile.TemporaryDirectory() as tmpdirname:
         filename = f'{tmpdirname}/FalconSensorMacOS.pkg'
         response = crowdstrike.download_sensor(maclatest, filename)
+        assert response is not None
         assert os.path.exists(filename)
             #raise ValueError(f'Failed to download file :(')

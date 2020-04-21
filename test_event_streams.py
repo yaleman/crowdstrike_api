@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+""" terrible tests for the event-streams endpoints """
 
 import json
 import os
 import sys
-import tempfile
 
 try:
     from loguru import logger
@@ -28,6 +28,7 @@ logger.enable("crowdstrike")
 
 
 def test_really_replace_with_a_real_test():
+    """ terrible test, shouldn't be like this """
     # TODO: replace this with anything closer to a real test suite
     crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
@@ -38,7 +39,7 @@ def test_really_replace_with_a_real_test():
     if not streams.get("resources", False):
         logger.error(json.dumps(streams))
         raise ValueError("No resources in stream response")
-    assert streams.get('resources',False)
+    assert streams.get('resources', False)
 
     # for resource in streams.get('resources'):
     #     logger.info("Stream found")
