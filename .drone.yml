@@ -15,7 +15,7 @@ steps:
   commands:
   - pip install --quiet pipenv
   - pipenv install --dev
-  - pipenv run python3 test1.py
+  - pipenv run pytest
   environment:
     CLIENT_ID:
       from_secret: CLIENT_ID

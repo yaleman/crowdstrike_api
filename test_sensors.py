@@ -27,37 +27,40 @@ except ImportError:
 logger.enable("crowdstrike")
 
 
+def test_really_replace_this_with_a_real_test():
+    crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
-crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
-
-# find a few different crowdstrike ids
-ids = crowdstrike.get_sensor_installer_ids(
-    sort_string="release_date|desc",
-    filter_string='platform:"mac"'
-)
-ids = crowdstrike.get_sensor_installer_ids(
-    sort_string="release_date|desc",
-)
-ids = crowdstrike.get_sensor_installer_ids(
-    filter_string='platform:"mac"'
-)
-
-
-# test downloading the latest macOS installer
-maclatest = crowdstrike.get_latest_sensor_id(filter_string='platform:"mac"')
-logger.info(
-    json.dumps(
-        # also tests showing an installer's data
-        crowdstrike.get_sensor_installer_details(maclatest),
-        indent=2
+    # find a few different crowdstrike ids
+    ids = crowdstrike.get_sensor_installer_ids(
+        sort_string="release_date|desc",
+        filter_string='platform:"mac"'
     )
-)
+    assert ids is not None
+    ids = crowdstrike.get_sensor_installer_ids(
+        sort_string="release_date|desc",
+    )
+    assert ids is not None
+    ids = crowdstrike.get_sensor_installer_ids(
+        filter_string='platform:"mac"'
+    )
+    assert ids is not None
 
-logger.info("Testing download to temporary directory....")
-# this'll write it to a temporary directory which is removed afterwards
-with tempfile.TemporaryDirectory() as tmpdirname:
-    filename = f'{tmpdirname}/FalconSensorMacOS.pkg'
-    response = crowdstrike.download_sensor(maclatest, filename)
-    if not os.path.exists(filename):
-        raise ValueError(f'Failed to download file :(')
-logger.info("Download looks to have worked!")
+
+    # test downloading the latest macOS installer
+    maclatest = crowdstrike.get_latest_sensor_id(filter_string='platform:"mac"')
+    logger.info(
+        json.dumps(
+            # also tests showing an installer's data
+            crowdstrike.get_sensor_installer_details(maclatest),
+            indent=2
+        )
+    )
+    assert maclatest is not None
+
+    logger.info("Testing download to temporary directory....")
+    # this'll write it to a temporary directory which is removed afterwards
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        filename = f'{tmpdirname}/FalconSensorMacOS.pkg'
+        response = crowdstrike.download_sensor(maclatest, filename)
+        assert os.path.exists(filename)
+            #raise ValueError(f'Failed to download file :(')

@@ -27,17 +27,19 @@ except ImportError:
 logger.enable("crowdstrike")
 
 
+def test_really_replace_with_a_real_test():
+    # TODO: replace this with anything closer to a real test suite
+    crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
 
-crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
+    logger.info("Testing get_event_streams()")
 
-logger.info("Testing get_event_streams()")
+    streams = crowdstrike.get_event_streams("testing123")
 
-streams = crowdstrike.get_event_streams("testing123")
+    if not streams.get("resources", False):
+        logger.error(json.dumps(streams))
+        raise ValueError("No resources in stream response")
+    assert streams.get('resources',False)
 
-if not streams.get("resources", False):
-    logger.error(json.dumps(streams))
-    raise ValueError("No resources in stream response")
-
-for resource in streams.get('resources'):
-    logger.info("Stream found")
-    logger.info(f"dataFeedURL: {resource.get('dataFeedURL')}")
+    # for resource in streams.get('resources'):
+    #     logger.info("Stream found")
+    #     logger.info(f"dataFeedURL: {resource.get('dataFeedURL')}")
