@@ -20,6 +20,7 @@ from .hosts import hosts_query_devices, host_action, hosts_hidden, hosts_detail
 from .sensor_download import get_sensor_installer_details, get_ccid, get_latest_sensor_id, get_sensor_installer_ids, download_sensor
 from .event_streams import get_event_streams
 from .incidents import incidents_behaviors_by_id, incidents_get_crowdscores, incidents_get_details, incidents_perform_actions, incidents_query, incidents_query_behaviors
+from .detects import get_detects, get_detections
 
 API_BASEURL = "https://api.crowdstrike.com"
 
@@ -65,8 +66,10 @@ class CrowdstrikeAPI:
         fulluri = f"{API_BASEURL}{uri}"
         if request_method.lower() == 'get' and data:
             response = self.oauth.request(request_method, fulluri, params=data)
+        elif request_method.lower() == 'patch' and data:
+            response = self.oauth.request(request_method, fulluri, json=data)
         else:
-            response = self.oauth.request(request_method, fulluri, data=data)
+            response = self.oauth.request(request_method, fulluri, json=data)
         return response
 
     def request(self, uri: str, request_method: str = None, data: dict = None):
@@ -103,6 +106,9 @@ class CrowdstrikeAPI:
     get_sensor_installer_details = get_sensor_installer_details
     get_sensor_installer_ids = get_sensor_installer_ids
     download_sensor = download_sensor
+    #detects
+    get_detects = get_detects
+    get_detections = get_detections
     # event-streams
     get_event_streams = get_event_streams
     # hosts

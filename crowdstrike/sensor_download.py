@@ -6,7 +6,7 @@ from loguru import logger
 
 def download_sensor(self, sensorid: str, destination_filename: str):
     """ downloads a sensor id to the filename """
-    uri = f'/sensors/entities/download-installer/v1'
+    uri = '/sensors/entities/download-installer/v1'
     data = {
         'id' : sensorid,
     }
