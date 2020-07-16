@@ -34,7 +34,7 @@ crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET) # pylint: disable=invalid
 
 def test_query_devices(crowdstrike_client=crowdstrike):
     """ tests query_devices() """
-    logger.info("Testing get_event_streams()")
+    logger.info("Testing hosts_query_devices()")
     hosts = crowdstrike_client.hosts_query_devices(limit=5)
     logger.debug(hosts)
     assert hosts is not None

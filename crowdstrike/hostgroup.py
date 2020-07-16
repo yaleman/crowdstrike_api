@@ -1,13 +1,11 @@
 """ handles interactions with the "hosts" category """
 
-import json
-
 from loguru import logger
 
 from .utilities import validate_kwargs
 
 def get_host_groups(self, **kwargs):
-    """ Retrieve a set of host groups by specifying their IDs 
+    """ Retrieve a set of host groups by specifying their IDs
     Returns a set of Host Groups which match the filter criteria
 
         ids: str (required)
@@ -29,7 +27,7 @@ def get_host_groups(self, **kwargs):
     return response.json()
 
 def search_host_groups(self, **kwargs):
-    """ Search for Host Groups in your environment by providing an FQL filter and paging details. 
+    """ Search for Host Groups in your environment by providing an FQL filter and paging details.
     Returns a set of Host Groups which match the filter criteria
 
     - filter (string) - The filter expression that should be used to limit the results
