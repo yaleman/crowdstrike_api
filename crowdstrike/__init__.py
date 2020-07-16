@@ -17,6 +17,7 @@ except ImportError as importerror:
     sys.exit(f"Failed to import a dependency, quitting. Error: {importerror}")
 
 from .hosts import hosts_query_devices, host_action, hosts_hidden, hosts_detail
+from .hostgroup import search_host_groups, get_host_groups
 from .sensor_download import get_sensor_installer_details, get_ccid, get_latest_sensor_id, get_sensor_installer_ids, download_sensor
 from .event_streams import get_event_streams
 from .incidents import incidents_behaviors_by_id, incidents_get_crowdscores, incidents_get_details, incidents_perform_actions, incidents_query, incidents_query_behaviors
@@ -123,3 +124,10 @@ class CrowdstrikeAPI:
     incidents_perform_actions = incidents_perform_actions
     incidents_query = incidents_query
     incidents_query_behaviors = incidents_query_behaviors
+
+    #hostgroups
+    search_host_groups = search_host_groups
+    get_host_groups = get_host_groups
+
+    #rtr
+    
