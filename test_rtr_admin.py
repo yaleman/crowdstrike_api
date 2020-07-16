@@ -2,6 +2,7 @@
 
 """ tests the "hosts" endpoints """
 
+import json
 import os
 import sys
 # import tempfile
@@ -44,3 +45,12 @@ def test_search_rtr_scripts_offset(crowdstrike_client=crowdstrike):
     logger.debug(scripts)
     assert scripts is not None
     assert scripts.get('errors', None)  in (None, [])
+
+def test_get_rtr_scripts(crowdstrike_client=crowdstrike):
+    """ test it, requires search_rtr_scripts to work """
+    scripts = crowdstrike_client.search_rtr_scripts(offset=1, limit=1)
+    logger.debug(scripts)
+
+    response = crowdstrike_client.get_rtr_scripts(ids=scripts.get('resources'))
+    logger.debug(json.dumps(response, indent=2))
+    assert len(response.get('resources')) > 0

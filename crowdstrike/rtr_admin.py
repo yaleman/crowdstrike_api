@@ -34,6 +34,27 @@ def search_rtr_scripts(self, **kwargs):
     logger.debug(f"Request body: {response.request.body}")
     return response.json()
 
+def get_rtr_scripts(self, **kwargs):
+    """ Get custom-scripts based on the IDs given, tehse are used for the RTR `runscript` command
+
+    - ids (list) - A list of file IDs for the scripts to show
+    """
+    args_validation = {
+        'ids' : list,
+    }
+    validate_kwargs(args_validation, kwargs, required=args_validation.keys())
+
+    uri = '/real-time-response/entities/scripts/v1'
+    method = 'get'
+
+    response = self.request(uri=uri,
+                            request_method=method,
+                            data=kwargs,
+                            )
+    logger.debug(f"Request body: {response.request.body}")
+    return response.json()
+
+
 def execute_rtr_admin_command(self, **kwargs): #pylint: disable=unused-argument
     """
         - cloud_request_id (string) (required) - Cloud Request ID of the executed command to query
