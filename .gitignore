@@ -1,6 +1,9 @@
 config.py
 __pycache__
+**/__pycache__/**
 .vscode
-crowdstrike.egg-info/*
-build/*
-dist/*
+crowdstrike.egg-info/
+build/
+dist/
+swagger.json
+.pytest_cache

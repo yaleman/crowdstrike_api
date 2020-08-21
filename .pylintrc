@@ -1,0 +1,4 @@
+[default]
+# R0801 = similar-lines
+disable=R0801
+max-line-length=200
