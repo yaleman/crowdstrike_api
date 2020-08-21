@@ -1,15 +1,17 @@
+""" setup module for packaging """
+
 import setuptools
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 setuptools.setup(
     name="crowdstrike",
-    version="0.0.2",
+    version="0.0.3",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="Crowdstrike interface to the Python API",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/crowdstrike_api",
     packages=setuptools.find_packages(),
