@@ -16,7 +16,7 @@ def validate_kwargs(args_validation: dict, kwargs: dict, required: list = None):
         if key not in args_validation:
             raise ValueError(f"{key} not a valid argument")
         if not isinstance(kwargs[key], args_validation[key]):
-            raise TypeError(f"{key} not the valid type, should be: {args_validation[key]}")
+            raise TypeError(f"{key} not the valid type, should be: {args_validation[key]}, was {type(kwargs[key])}")
     if required:
         for key in required:
             if key not in kwargs:

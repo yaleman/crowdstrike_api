@@ -33,11 +33,14 @@ crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET) # pylint: disable=invalid
 
 def test_create_rtr_session(crowdstrike_client=crowdstrike):
     """ test create_rtr_session, should return a session ID """
-    host = crowdstrike_client.hosts_query_devices(filter="product_type_desc:'Workstation'+status:'normal'+platform_name:'Windows'", limit=1)
+    host = crowdstrike_client.hosts_query_devices(filter="product_type_desc:'Workstation'+status:'normal'+platform_name:'Windows'", 
+                                                  limit=1,
+                                                  sort="last_seen.desc",
+                                                  )
+    logger.debug("host query result")
     logger.debug(host)
-
+    assert len(host.get('resources')) > 0
     device_id = host.get('resources')[0]
-
     session_details = crowdstrike_client.create_rtr_session(device_id=device_id)
     logger.debug(session_details)
 

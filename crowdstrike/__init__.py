@@ -17,7 +17,7 @@ except ImportError as importerror:
     sys.exit(f"Failed to import a dependency, quitting. Error: {importerror}")
 
 from .hosts import hosts_query_devices, host_action, hosts_hidden, hosts_detail
-from .hostgroup import search_host_groups, get_host_groups
+from .hostgroup import search_host_groups, get_host_groups, update_host_group, create_host_group, delete_host_groups
 from .sensor_download import get_sensor_installer_details, get_ccid, get_latest_sensor_id, get_sensor_installer_ids, download_sensor
 from .event_streams import get_event_streams
 from .incidents import incidents_behaviors_by_id, incidents_get_crowdscores, incidents_get_details, incidents_perform_actions, incidents_query, incidents_query_behaviors
@@ -67,10 +67,12 @@ class CrowdstrikeAPI:
             default request method is get
         """
         fulluri = f"{API_BASEURL}{uri}"
-        if request_method.lower() == 'get' and data:
+
+        # these methods use a get-request-style-data-in-the-url nastiness.
+        methods_using_params = ['get', 'delete']
+
+        if request_method.lower() in methods_using_params and data:
             response = self.oauth.request(request_method, fulluri, params=data)
-        elif request_method.lower() == 'patch' and data:
-            response = self.oauth.request(request_method, fulluri, json=data)
         else:
             response = self.oauth.request(request_method, fulluri, json=data)
         return response
@@ -119,6 +121,7 @@ class CrowdstrikeAPI:
     host_action = host_action
     hosts_hidden = hosts_hidden
     hosts_detail = hosts_detail
+
     # incidents
     incidents_behaviors_by_id = incidents_behaviors_by_id
     incidents_get_crowdscores = incidents_get_crowdscores
@@ -128,8 +131,11 @@ class CrowdstrikeAPI:
     incidents_query_behaviors = incidents_query_behaviors
 
     #hostgroups
+    create_host_group = create_host_group
     search_host_groups = search_host_groups
     get_host_groups = get_host_groups
+    update_host_group = update_host_group
+    delete_host_groups = delete_host_groups
 
     #rtr
     create_rtr_session = create_rtr_session

@@ -19,6 +19,7 @@ def create_rtr_session(self, **kwargs):
     uri = '/real-time-response/entities/sessions/v1'
     method = 'post'
 
+    logger.debug(f"Creating RTR session for device_id={kwargs.get('device_id')}")
     response = self.request(uri=uri,
                             request_method=method,
                             data=kwargs,
