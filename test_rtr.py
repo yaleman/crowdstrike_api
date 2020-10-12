@@ -33,7 +33,7 @@ crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET) # pylint: disable=invalid
 
 def test_create_rtr_session(crowdstrike_client=crowdstrike):
     """ test create_rtr_session, should return a session ID """
-    host = crowdstrike_client.hosts_query_devices(filter="product_type_desc:'Workstation'+status:'normal'+platform_name:'Windows'", 
+    host = crowdstrike_client.hosts_query_devices(filter="product_type_desc:'Workstation'+status:'normal'+platform_name:'Windows'",
                                                   limit=1,
                                                   sort="last_seen.desc",
                                                   )
@@ -74,3 +74,30 @@ def test_invalid_rtr_session(crowdstrike_client=crowdstrike):
     response = crowdstrike_client.delete_rtr_session(session_id='This test better fail')
     logger.debug(response)
     assert response.status_code == 400
+
+
+def test_rtr_basic_ls(crowdstrike_client=crowdstrike):
+    """ test some rtr commands """
+    # TODO filter for recently online devices
+    host = crowdstrike_client.hosts_query_devices(filter="product_type_desc:'Workstation'+status:'normal'+platform_name:'Windows'", limit=1)
+    logger.debug(host)
+
+    device_id = host.get('resources')[0]
+
+    session_details = crowdstrike_client.create_rtr_session(device_id=device_id)
+    logger.debug(session_details)
+
+    assert session_details.get('errors', None) in (None, [])
+    if session_details.get('resources') and len(session_details.get('resources')) > 0:
+        assert 'session_id' in session_details.get('resources')[0]
+        session_id = session_details.get('resources')[0].get('session_id')
+        assert isinstance(session_id, str)
+
+    response = crowdstrike_client.rtr_execute_command(base_command='ls', command_string='c:\\', session_id=session_id)
+    logger.debug(response)
+
+    # TODO: actually get the response back
+    #response = crowdstrike_client.rtr_command_status()
+
+    response = crowdstrike_client.delete_rtr_session(session_id=session_id)
+    logger.debug(response)

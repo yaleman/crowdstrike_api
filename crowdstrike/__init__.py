@@ -22,7 +22,7 @@ from .sensor_download import get_sensor_installer_details, get_ccid, get_latest_
 from .event_streams import get_event_streams
 from .incidents import incidents_behaviors_by_id, incidents_get_crowdscores, incidents_get_details, incidents_perform_actions, incidents_query, incidents_query_behaviors
 from .detects import get_detects, get_detections
-from .rtr import create_rtr_session, delete_rtr_session
+from .rtr import create_rtr_session, delete_rtr_session, rtr_execute_command, rtr_command_status
 from .rtr_admin import search_rtr_scripts, get_rtr_scripts
 
 API_BASEURL = "https://api.crowdstrike.com"
@@ -41,6 +41,8 @@ class CrowdstrikeAPI:
         """ starts up the CrowdstrikeAPI module Needs two strings,
         the client_id and client_secret, available from
         https://falcon.crowdstrike.com/support/api-clients-and-keys
+
+        You might want to override api_baseurl if you're in a different region, too.
         """
         self.client_id = client_id
         self.client_secret = client_secret
@@ -140,6 +142,9 @@ class CrowdstrikeAPI:
     #rtr
     create_rtr_session = create_rtr_session
     delete_rtr_session = delete_rtr_session
+
+    rtr_command_status = rtr_command_status
+    rtr_execute_command = rtr_execute_command
 
     #rtr_admin
     search_rtr_scripts = search_rtr_scripts
