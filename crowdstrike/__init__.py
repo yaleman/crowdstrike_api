@@ -22,7 +22,7 @@ from .sensor_download import get_sensor_installer_details, get_ccid, get_latest_
 from .event_streams import get_event_streams
 from .incidents import incidents_behaviors_by_id, incidents_get_crowdscores, incidents_get_details, incidents_perform_actions, incidents_query, incidents_query_behaviors
 from .detects import get_detects, get_detections
-from .rtr import create_rtr_session, delete_rtr_session, rtr_execute_command, rtr_command_status
+from .rtr import create_rtr_session, delete_rtr_session, rtr_execute_command, rtr_command_status, rtr_command_status_wait
 from .rtr_admin import search_rtr_scripts, get_rtr_scripts
 
 API_BASEURL = "https://api.crowdstrike.com"
@@ -145,6 +145,7 @@ class CrowdstrikeAPI:
 
     rtr_command_status = rtr_command_status
     rtr_execute_command = rtr_execute_command
+    rtr_command_status_wait = rtr_command_status_wait
 
     #rtr_admin
     search_rtr_scripts = search_rtr_scripts

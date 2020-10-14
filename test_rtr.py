@@ -4,6 +4,7 @@
 
 import os
 import sys
+from datetime import date
 # import tempfile
 
 try:
@@ -78,13 +79,23 @@ def test_invalid_rtr_session(crowdstrike_client=crowdstrike):
 
 def test_rtr_basic_ls(crowdstrike_client=crowdstrike):
     """ test some rtr commands """
-    # TODO filter for recently online devices
-    host = crowdstrike_client.hosts_query_devices(filter="product_type_desc:'Workstation'+status:'normal'+platform_name:'Windows'", limit=1)
+    # filter for recently online windows devices
+    fql_filter = "+".join([
+        "product_type_desc:'Workstation'",
+        "status:'normal'",
+        "platform_name:'Windows'",
+        f"last_seen: >='{date.today()}'",
+    ])
+
+    logger.debug(f"FQL Filter: {fql_filter}")
+    host = crowdstrike_client.hosts_query_devices(filter=fql_filter, limit=1)
     logger.debug(host)
 
     device_id = host.get('resources')[0]
 
+
     session_details = crowdstrike_client.create_rtr_session(device_id=device_id)
+    logger.debug("Created session, details:")
     logger.debug(session_details)
 
     assert session_details.get('errors', None) in (None, [])
@@ -93,11 +104,17 @@ def test_rtr_basic_ls(crowdstrike_client=crowdstrike):
         session_id = session_details.get('resources')[0].get('session_id')
         assert isinstance(session_id, str)
 
-    response = crowdstrike_client.rtr_execute_command(base_command='ls', command_string='c:\\', session_id=session_id)
+    response = crowdstrike_client.rtr_execute_command(base_command='ls', command_string='ls c:\\', session_id=session_id)
+    logger.debug(response)
+    assert not response.get('errors')
+
+    cloud_request_id = response.get('resources', [{}])[0].get('cloud_request_id')
+
+    logger.debug(f"Waiting for response in cloud_request_id {cloud_request_id} ")
+
+    response = crowdstrike_client.rtr_command_status_wait(cloud_request_id=cloud_request_id, interval=1, maxtime=60)
     logger.debug(response)
 
-    # TODO: actually get the response back
-    #response = crowdstrike_client.rtr_command_status()
 
     response = crowdstrike_client.delete_rtr_session(session_id=session_id)
     logger.debug(response)

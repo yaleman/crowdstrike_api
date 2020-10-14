@@ -1,6 +1,7 @@
 """ handles interactions with the "hosts" category """
 
-# import json
+import json
+import time
 
 from loguru import logger
 
@@ -119,3 +120,31 @@ def rtr_command_status(self, cloud_request_id: str, sequence_id: int):
     logger.debug(f"Response: {response.text}")
 
     return response.json()
+
+def rtr_command_status_wait(self, cloud_request_id: str, interval: int = 5, maxtime: int = 60):
+    """ polls rtr_command_status() periodically until it's done, then returns the results
+
+        - interval (int) the number of seconds between a check
+        - maxtime (int) the maximum time to wait - note this will currently just calculate maxtime / interval, so isn't exact (yet)
+    """
+    finished = False
+    iteration = 0
+    while not finished:
+        response = self.rtr_command_status(cloud_request_id=cloud_request_id,
+                                           sequence_id=0,
+                                           )
+        logger.debug(response)
+
+        # pylint: disable=no-else-return
+        if response.get('resources', [{}])[0].get('complete'):
+            return response
+        else:
+            iteration += 1
+            # TODO: make this closer to the actual runtime of rtr_command_status_wait()'s call
+            # pylint: disable=no-else-raise
+            if (interval*iteration) > maxtime:
+                raise TimeoutError(f"Waited too long for {cloud_request_id} to finish, last response: {json.dumps(response)}")
+            else:
+                logger.debug(f"Sleeping for {interval} second(s)")
+                time.sleep(interval)
+    return response
