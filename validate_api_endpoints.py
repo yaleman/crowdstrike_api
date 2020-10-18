@@ -20,14 +20,15 @@ for function_name in [ fname for fname in dir(CrowdstrikeAPI) if not fname.start
     logger.debug(f"Checking function {function_name}")
     target_function = getattr(CrowdstrikeAPI,function_name)
 
-    target_uri = target_method = False
-    src = inspect.getsource(target_function)
+    target_uri = False #pylint: disable=invalid-name
+    target_method = False #pylint: disable=invalid-name
+    SOURCE_CODE = inspect.getsource(target_function)
     # some functions don't use requests, but most should
     SKIP_OAUTH_REQUEST_CHECK = ('request', 'do_request', 'get_token', 'revoke_token')
-    if 'do_request' not in src and 'self.request' not in src and function_name not in SKIP_OAUTH_REQUEST_CHECK and 'NotImplementedError' not in src: 
+    if 'do_request' not in SOURCE_CODE and 'self.request' not in SOURCE_CODE and function_name not in SKIP_OAUTH_REQUEST_CHECK and 'NotImplementedError' not in SOURCE_CODE:
         logger.warning(f"do_request or request call not in {function_name}()")
-        #logger.warning(src)
-    for line in src.split("\n"):
+        #logger.warning(SOURCE_CODE)
+    for line in SOURCE_CODE.split("\n"):
         if line.strip().startswith('uri = '):
             target_uri = line.strip().split()[-1].replace("'", '')
             logger.debug(f"Found new target URI: {target_uri}")

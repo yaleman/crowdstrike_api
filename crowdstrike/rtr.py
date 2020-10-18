@@ -158,6 +158,7 @@ def rtr_command_status_wait(self, cloud_request_id: str, interval: int = 5, maxt
     """
     finished = False
     iteration = 0
+    start_time = int(time.time())
     while not finished:
         response = self.rtr_command_status(cloud_request_id=cloud_request_id,
                                            sequence_id=0,
@@ -167,8 +168,8 @@ def rtr_command_status_wait(self, cloud_request_id: str, interval: int = 5, maxt
         if response.get('resources', [{}])[0].get('complete'):
             return response
         iteration += 1
-        # TODO: make this closer to the actual runtime of rtr_command_status_wait()'s call
-        if (interval*iteration) > maxtime:
+
+        if (int(time.time()) - start_time) >= maxtime:
             raise TimeoutError(f"Waited too long for {cloud_request_id} to finish, last response: {json.dumps(response)}")
         logger.debug(f"Sleeping for {interval} second(s)")
         time.sleep(interval)
