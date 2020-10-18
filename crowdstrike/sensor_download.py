@@ -86,7 +86,7 @@ def get_sensor_installer_ids(self, sort_string: str = "", filter_string: str = "
     """
     returns a list of installer IDs, they're a list of SHA256's
     """
-    logger.debug(f"get_sensor_installer_ids() called, sort_string: '{sort_string}', filter_string: '{filter_string}'") # pylint: disable=line-too-long
+    logger.debug(f"sort_string: '{sort_string}', filter_string: '{filter_string}'")
     uri = '/sensors/queries/installers/v1'
 
     data = {
