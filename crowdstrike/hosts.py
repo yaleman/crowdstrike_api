@@ -19,14 +19,14 @@ def host_action(self, **kwargs):
         ids: str (required)
             - ids should be a list of strings
     """
-    args_validation = {
-        'action' : str,
-        'ids' : list,
-    }
-    validate_kwargs(args_validation, kwargs, required=args_validation.keys())
+    # args_validation = {
+    #     'action' : str,
+    #     'ids' : list,
+    # }
+    # validate_kwargs(args_validation, kwargs, required=args_validation.keys())
 
-    uri = '/devices/entities/devices-actions/v2'
-    method = 'post'
+    # uri = '/devices/entities/devices-actions/v2'
+    # method = 'post'
 
     raise NotImplementedError("Honestly, the documentation is terrible for this function")
     # response = self.request(uri=uri,

@@ -11,6 +11,3 @@ pytest = "*"
 [packages]
 requests-oauthlib = "*"
 loguru = "*"
-
-[requires]
-python_version = "3.7"

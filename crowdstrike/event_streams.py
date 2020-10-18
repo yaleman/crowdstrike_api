@@ -24,9 +24,9 @@ def get_event_streams(self, appid: str, format_str: str = "json"):
 def refresh_event_stream(self, partition: int, appid: str):
     """ refresh an active event stream. use the url returned from get_event_streams
     """
-    action_name = 'refresh_active_stream_session'
 
     raise NotImplementedError("sorry, not done yet")
+    # action_name = 'refresh_active_stream_session'
     # example valid response
     # {
     # "errors": [

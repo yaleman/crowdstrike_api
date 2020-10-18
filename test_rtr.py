@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" tests the "hosts" endpoints """
+""" tests the "rtr" endpoints """
 
 import os
 import sys
@@ -28,9 +28,24 @@ except ImportError:
 
 logger.enable("crowdstrike")
 
-
-
 crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET) # pylint: disable=invalid-name
+
+
+def test_list_rtr_session_ids(crowdstrike_client=crowdstrike):
+    """ test delete_rtr_session with a junk ID """
+    response = crowdstrike_client.list_rtr_session_ids()
+    logger.debug(response)
+    assert not response.get('errors')
+
+    response = crowdstrike_client.list_rtr_session_ids(limit=1)
+    logger.debug(response)
+    assert len(response.get('resources')) == 1
+    assert not response.get('errors')
+
+    response = crowdstrike_client.list_rtr_session_ids(filter="user_id: '@me'")
+    logger.debug(response)
+    assert not response.get('errors')
+
 
 def test_create_rtr_session(crowdstrike_client=crowdstrike):
     """ test create_rtr_session, should return a session ID """

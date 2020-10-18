@@ -7,6 +7,35 @@ from loguru import logger
 
 from .utilities import validate_kwargs
 
+def list_rtr_session_ids(self, **kwargs):
+    """ Get a list of session_ids
+
+    https://assets.falcon.crowdstrike.com/support/api/swagger.html#/real-time-response/RTR_ListAllSessions
+
+    - offset (int) - starting index in list to query (ie, start from #5)
+    - limit (int) - number of ids to return
+    - sort (string) - sort by spec. Ex: 'date_created|asc’.
+    - filter (string) - Optional filter criteria in the form of an FQL  query. “user_id” can accept a special value ‘@me’ which will restrict results to records with current user’s ID.
+        example: filter="user_id: '@me'"
+
+    """
+    method = 'get'
+    uri = '/real-time-response/queries/sessions/v1'
+    args_validation = {
+        'offset' : int,
+        'limit' : int,
+        'sort' : str,
+        'filter' : str,
+    }
+    validate_kwargs(args_validation, kwargs)
+    logger.debug(f"Querying RTR session list, kwargs: {json.dumps(kwargs)}")
+    response = self.request(uri=uri,
+                            request_method=method,
+                            data=kwargs,
+                            )
+    logger.debug(response.json())
+    return response.json()
+
 def create_rtr_session(self, **kwargs):
     """ Create a new RTR session, will retrieve an existing session if exists.
 
@@ -135,16 +164,12 @@ def rtr_command_status_wait(self, cloud_request_id: str, interval: int = 5, maxt
                                            )
         logger.debug(response)
 
-        # pylint: disable=no-else-return
         if response.get('resources', [{}])[0].get('complete'):
             return response
-        else:
-            iteration += 1
-            # TODO: make this closer to the actual runtime of rtr_command_status_wait()'s call
-            # pylint: disable=no-else-raise
-            if (interval*iteration) > maxtime:
-                raise TimeoutError(f"Waited too long for {cloud_request_id} to finish, last response: {json.dumps(response)}")
-            else:
-                logger.debug(f"Sleeping for {interval} second(s)")
-                time.sleep(interval)
+        iteration += 1
+        # TODO: make this closer to the actual runtime of rtr_command_status_wait()'s call
+        if (interval*iteration) > maxtime:
+            raise TimeoutError(f"Waited too long for {cloud_request_id} to finish, last response: {json.dumps(response)}")
+        logger.debug(f"Sleeping for {interval} second(s)")
+        time.sleep(interval)
     return response

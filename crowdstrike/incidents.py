@@ -6,14 +6,14 @@ from .utilities import validate_kwargs
 
 def incidents_get_crowdscores(self, **kwargs):
     """ Query environment wide CrowdScore and return the entity data """
-    uri = '/incidents/combined/crowdscores/v1'
-    method = 'get'
+    # uri = '/incidents/combined/crowdscores/v1'
+    # method = 'get'
     raise NotImplementedError
 
 def incidents_perform_actions(self, **kwargs):
     "Perform a set of actions on one or more incidents, such as adding tags or comments or updating the incident name or description"
-    uri = '/incidents/entities/incident-actions/v1'
-    method = 'post'
+    # uri = '/incidents/entities/incident-actions/v1'
+    # method = 'post'
     raise NotImplementedError
 
 def incidents_get_details(self, **kwargs):
@@ -37,14 +37,14 @@ def incidents_get_details(self, **kwargs):
 
 def incidents_behaviors_by_id(self, **kwargs):
     """Get details on behaviors by providing behavior IDs """
-    uri = '/incidents/entities/behaviors/GET/v1'
-    method = 'post'
+    # uri = '/incidents/entities/behaviors/GET/v1'
+    # method = 'post'
     raise NotImplementedError
 
 def incidents_query_behaviors(self, **kwargs):
     """Search for behaviors by providing an FQL filter, sorting, and paging details"""
-    uri = '/incidents/queries/behaviors/v1'
-    method = 'get'
+    # uri = '/incidents/queries/behaviors/v1'
+    # method = 'get'
     raise NotImplementedError
 
 def incidents_query(self, **kwargs):
@@ -77,7 +77,7 @@ def incidents_query(self, **kwargs):
     if 'limit' in kwargs:
         if int(kwargs.get('limit')) > 500:
             raise ValueError("Maximum of 500 for 'limit' on this endpoint.")
-        elif int(kwargs.get('limit')) < 1:
+        if int(kwargs.get('limit')) < 1:
             raise ValueError("Minimum of 1 for 'limit' on this endpoint.")
 
     response = self.request(uri=uri,

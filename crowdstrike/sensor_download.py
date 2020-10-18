@@ -65,7 +65,7 @@ def get_sensor_installer_details(self, sensorid: str):
     returns a dict about a particular sensor ID, or False if it can't find anything useful
     """
     logger.debug(f"Sensor ID: {sensorid}")
-    uri = f"/sensors/entities/installers/v1"
+    uri = "/sensors/entities/installers/v1"
     data = {
         'ids' : sensorid,
         }

@@ -11,6 +11,9 @@ import errno
 
 try:
     from loguru import logger
+    import requests
+    from requests.auth import HTTPBasicAuth
+
     import requests_oauthlib
     from oauthlib.oauth2 import BackendApplicationClient, TokenExpiredError
 except ImportError as importerror:
@@ -22,7 +25,7 @@ from .sensor_download import get_sensor_installer_details, get_ccid, get_latest_
 from .event_streams import get_event_streams
 from .incidents import incidents_behaviors_by_id, incidents_get_crowdscores, incidents_get_details, incidents_perform_actions, incidents_query, incidents_query_behaviors
 from .detects import get_detects, get_detections
-from .rtr import create_rtr_session, delete_rtr_session, rtr_execute_command, rtr_command_status, rtr_command_status_wait
+from .rtr import create_rtr_session, delete_rtr_session, rtr_execute_command, rtr_command_status, rtr_command_status_wait, list_rtr_session_ids
 from .rtr_admin import search_rtr_scripts, get_rtr_scripts
 
 API_BASEURL = "https://api.crowdstrike.com"
@@ -55,12 +58,40 @@ class CrowdstrikeAPI:
     def get_token(self):
         """ Gets the latest auth token and returns it. """
         logger.debug("Requesting auth token")
+        uri = '/oauth2/token'
+        # this is just here for introspection purposes
+        # pylint: disable=unused-variable
+        method = 'post'
         self.token = self.oauth.fetch_token(
-            token_url=f"{API_BASEURL}/oauth2/token",
+            token_url=f"{API_BASEURL}{uri}",
             client_id=self.client_id,
             client_secret=self.client_secret,
         )
         return self.token
+
+    def revoke_token(self, **kwargs):
+        """ revoke the current token
+
+        https://assets.falcon.crowdstrike.com/support/api/swagger.html#/oauth2/oauth2RevokeToken
+        """
+        #token = kwargs.get('token', self.token)
+        #logger.debug(self.token)
+        token = kwargs.get('token', self.token.get('access_token'))
+
+        uri = '/oauth2/revoke'
+        method = 'post'
+        data = {
+            'token': token,
+        }
+        response = requests.request(url=f"{API_BASEURL}{uri}",
+                                    method=method,
+                                    data=data,
+                                    auth=HTTPBasicAuth(self.client_id, self.client_secret)
+                                    )
+        logger.debug(response)
+        logger.debug(response.request.headers)
+        logger.debug(response.request.body)
+        return response.json()
 
     def do_request(self, uri: str, data: dict, request_method: str = 'get'):
         """ does the request, this allows a single code implementation for
@@ -142,6 +173,7 @@ class CrowdstrikeAPI:
     #rtr
     create_rtr_session = create_rtr_session
     delete_rtr_session = delete_rtr_session
+    list_rtr_session_ids = list_rtr_session_ids
 
     rtr_command_status = rtr_command_status
     rtr_execute_command = rtr_execute_command
