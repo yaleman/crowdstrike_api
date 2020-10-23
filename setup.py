@@ -7,10 +7,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="crowdstrike",
-    version="0.0.3",
+    version="0.0.4",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
-    description="Crowdstrike interface to the Python API",
+    description="Python interface to the Crowdstrike API",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/crowdstrike_api",

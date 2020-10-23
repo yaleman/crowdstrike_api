@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import tempfile
+import pytest
 
 try:
     from loguru import logger
@@ -68,3 +69,15 @@ def test_find_true_positives():
     assert len(incidents) > 0
     logger.debug(incidents)
 
+
+def test_incidents_perform_actions():
+    """ tests some basic things in incidents_perform_actions """
+
+    crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
+    #with pytest.raises(ValueError):
+    crowdstrike.incidents_perform_actions(ids=['12345'],
+                                                   action_parameters=[{
+                                                       'name' : 'tags',
+                                                       'value' : '',
+                                                   },]
+                                                   )

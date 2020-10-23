@@ -14,12 +14,37 @@ def incidents_perform_actions(self, **kwargs):
     "Perform a set of actions on one or more incidents, such as adding tags or comments or updating the incident name or description"
     # uri = '/incidents/entities/incident-actions/v1'
     # method = 'post'
+    args_validation = {
+        'action_parameters' : list,
+        'ids' : list,
+    }
+    validate_kwargs(args_validation, kwargs, required=args_validation.keys())
+
+    # validate action parameters
+    for action in kwargs.get('action_parameters'):
+        if not isinstance(action, dict):
+            raise ValueError()
+        if sorted(('name', 'value')) != sorted(set(action.keys())):
+            raise ValueError(f"Keys for action_parameter have to be name, value only, got: {sorted(set(action.keys()))}")
+    logger.debug(kwargs)
+
+
     raise NotImplementedError
 
 def incidents_get_details(self, **kwargs):
     """ Get details on incidents by providing a list of incident IDs
 
     returns the raw object so you can look for errors and pagination and so forth
+
+    requires:
+    - ids (list) - a list of incident IDs
+
+    returns JSON data, response key has the following sub-keys: [
+                        'incident_id', 'incident_type', 'cid', 
+                        'host_ids', 'hosts', 
+                        'created', 'start', 'end', 'state', 
+                        'status', 'tactics', 'techniques', 'objectives', 'users', 'fine_score',
+                        ])
 
     swagger docs: https://assets.falcon.crowdstrike.com/support/api/swagger.html#/incidents/GetIncidents
     """
@@ -54,14 +79,21 @@ def incidents_query(self, **kwargs):
 
     docs: https://falcon.crowdstrike.com/support/documentation/86/detections-monitoring-apis
 
-    status: '20' # new
-    status: '25' # reopened
-    status: '30' # in progress
-    status: '40' # closed
+    args:
+        - sort (str)
+        - filter (str)
+        - offset (int)
+        - limit (int) - max 500, min 1
 
-    score_range:'7.5 - 10'
+    filter examples:
+        status: '20' # new
+        status: '25' # reopened
+        status: '30' # in progress
+        status: '40' # closed
 
-    tags: 'True Positive', 'Ignored', 'Lateral Movement'
+        score_range:'7.5 - 10'
+
+        tags: 'True Positive', 'Ignored', 'Lateral Movement'
 
     """
     uri = '/incidents/queries/incidents/v1'

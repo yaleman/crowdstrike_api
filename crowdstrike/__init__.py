@@ -34,6 +34,13 @@ API_BASEURL = "https://api.crowdstrike.com"
 logger.disable('crowdstrike')
 
 
+INCIDENT_STATUS_LOOKUP = {
+    20 : "New",
+    25: "Reopened",
+    30: "In progress",
+    40: "Closed",
+}
+
 
 class CrowdstrikeAPI:
     """ Crowdstrike API """

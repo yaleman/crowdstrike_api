@@ -7,3 +7,4 @@ build/
 dist/
 swagger.json
 .pytest_cache
+dostuff.py
