@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """ terrible tests for the sensors endpoints """
-import json
+# import json
 import os
 import sys
-import tempfile
+# import tempfile
 import pytest
 
 try:
@@ -74,10 +74,17 @@ def test_incidents_perform_actions():
     """ tests some basic things in incidents_perform_actions """
 
     crowdstrike = CrowdstrikeAPI(CLIENT_ID, CLIENT_SECRET)
-    #with pytest.raises(ValueError):
-    crowdstrike.incidents_perform_actions(ids=['12345'],
+    with pytest.raises(ValueError):
+        crowdstrike.incidents_perform_actions(ids=['12345'], action_parameters=[{ 'foo' : 'bar'}])
+    with pytest.raises(ValueError):
+        crowdstrike.incidents_perform_actions(ids=['12345'], action_parameters=[{ 'name' : 'tags', 'value' : 'foo', 'foo' : 'bar'}])
+    with pytest.raises(ValueError):
+        crowdstrike.incidents_perform_actions(ids=['12345'], action_parameters=[{ 'name' : 'tags', 'value' : 13, 'foo' : 'bar'}])
+    
+    results = crowdstrike.incidents_perform_actions(ids=['12345'],
                                                    action_parameters=[{
                                                        'name' : 'tags',
                                                        'value' : '',
                                                    },]
                                                    )
+    logger.debug(results)

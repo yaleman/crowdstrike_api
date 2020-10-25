@@ -12,8 +12,9 @@ def incidents_get_crowdscores(self, **kwargs):
 
 def incidents_perform_actions(self, **kwargs):
     "Perform a set of actions on one or more incidents, such as adding tags or comments or updating the incident name or description"
-    # uri = '/incidents/entities/incident-actions/v1'
-    # method = 'post'
+
+    uri = '/incidents/entities/incident-actions/v1'
+    method = 'post'
     args_validation = {
         'action_parameters' : list,
         'ids' : list,
@@ -21,15 +22,24 @@ def incidents_perform_actions(self, **kwargs):
     validate_kwargs(args_validation, kwargs, required=args_validation.keys())
 
     # validate action parameters
+    ACTION_KEYS = ('name', 'value')
+
     for action in kwargs.get('action_parameters'):
         if not isinstance(action, dict):
             raise ValueError()
-        if sorted(('name', 'value')) != sorted(set(action.keys())):
+        if sorted(ACTION_KEYS) != sorted(set(action.keys())):
             raise ValueError(f"Keys for action_parameter have to be name, value only, got: {sorted(set(action.keys()))}")
+        for key in ACTION_KEYS:
+            if not isinstance(action.get(key), str):
+                raise ValueError(f"Values for action_parameter have to be string, value only, {key} was {type(action.get(key))}")
+
     logger.debug(kwargs)
+    response = self.request(uri=uri,
+                            request_method=method,
+                            data=kwargs,
+                            )
+    return response.json()
 
-
-    raise NotImplementedError
 
 def incidents_get_details(self, **kwargs):
     """ Get details on incidents by providing a list of incident IDs
@@ -40,9 +50,9 @@ def incidents_get_details(self, **kwargs):
     - ids (list) - a list of incident IDs
 
     returns JSON data, response key has the following sub-keys: [
-                        'incident_id', 'incident_type', 'cid', 
-                        'host_ids', 'hosts', 
-                        'created', 'start', 'end', 'state', 
+                        'incident_id', 'incident_type', 'cid',
+                        'host_ids', 'hosts',
+                        'created', 'start', 'end', 'state',
                         'status', 'tactics', 'techniques', 'objectives', 'users', 'fine_score',
                         ])
 
