@@ -33,22 +33,31 @@ API_BASEURL = "https://api.crowdstrike.com"
 # if you want to enable logging then you can just run logger.enable("crowdstrike") in your code.
 logger.disable('crowdstrike')
 
-
+# set status by using the keys in here, not the values
 INCIDENT_STATUS_LOOKUP = {
     20 : "New",
-    25: "Reopened",
-    30: "In progress",
-    40: "Closed",
+    25 : "Reopened",
+    30 : "In progress",
+    40 : "Closed",
 }
+
+# normal ones they use
+INCIDENT_TAGS_STANDARD = [
+    'False Positive',
+    'Ignored',
+    'Lateral Movement',
+    'Testing',
+    'True Positive',
+]
 
 
 class CrowdstrikeAPI:
     """ Crowdstrike API """
     def __init__(self,
-                 client_id,
-                 client_secret,
+                 client_id: str,
+                 client_secret: str,
                  api_baseurl: str = API_BASEURL):
-        """ starts up the CrowdstrikeAPI module Needs two strings,
+        """ Starts up the CrowdstrikeAPI module Needs two strings,
         the client_id and client_secret, available from
         https://falcon.crowdstrike.com/support/api-clients-and-keys
 

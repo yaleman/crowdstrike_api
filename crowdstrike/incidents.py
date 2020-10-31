@@ -4,6 +4,8 @@ from loguru import logger
 
 from .utilities import validate_kwargs
 
+VALID_ACTION_KEYS = ['add_tag', 'delete_tag', 'update_name', 'update_description', 'update_status']
+
 __all__ = [
     'incidents_get_crowdscores',
     'incidents_perform_actions',
@@ -15,7 +17,6 @@ __all__ = [
 
 ACTION_KEYS = ('name', 'value') # keys used in the body of the incidents_perform_action call
 
-
 def incidents_get_crowdscores(self, **kwargs):
     """ Query environment wide CrowdScore and return the entity data """
     # uri = '/incidents/combined/crowdscores/v1'
@@ -23,7 +24,22 @@ def incidents_get_crowdscores(self, **kwargs):
     raise NotImplementedError
 
 def incidents_perform_actions(self, **kwargs):
-    "Perform a set of actions on one or more incidents, such as adding tags or comments or updating the incident name or description"
+    """ Perform a set of actions on one or more incidents, such as adding tags or comments or updating the incident name or description
+
+    Documentation here: https://falcon.crowdstrike.com/support/documentation/86/detections-monitoring-apis#modify-incidents
+
+    Valid Action_parameters
+        add_tag - Adds the associated value as a new tag on all the incidents of the ids list.
+        delete_tag - Deletes tags matching the value from all the incidents in the ids list
+        update_name - Updates the name to the parameter value of all the incidents in the ids list.
+        update_description - Updates the description to the parameter value of all the incidents listed in the ids.
+        update_status - Updates the status to the parameter value of all the incidents in the ids list. 
+            Valid values for status are 20, 25, 30, 40: (also in crowdstrike.INCIDENT_STATUS_LOOKUP)
+                20: New
+                25: Reopened
+                30: In Progress
+                40: Closed
+"""
 
     uri = '/incidents/entities/incident-actions/v1'
     method = 'post'
@@ -33,8 +49,7 @@ def incidents_perform_actions(self, **kwargs):
     }
     validate_kwargs(args_validation, kwargs, required=args_validation.keys())
 
-    # validate action parameters
-
+    # start validation of the action/value body
     for action in kwargs.get('action_parameters'):
         if not isinstance(action, dict):
             raise ValueError()
@@ -43,6 +58,9 @@ def incidents_perform_actions(self, **kwargs):
         for key in ACTION_KEYS:
             if not isinstance(action.get(key), str):
                 raise ValueError(f"Values for action_parameter have to be string, value only, {key} was {type(action.get(key))}")
+            if key == 'name' and action.get(key) not in VALID_ACTION_KEYS:
+                raise ValueError(f"Invalid action_parameter - set to '{action.get(key)}', not in {','.join(VALID_ACTION_KEYS)}")
+    # end validation of the action/value body
 
     logger.debug(kwargs)
     response = self.request(uri=uri,
