@@ -5,7 +5,16 @@ from loguru import logger
 from .utilities import validate_kwargs
 
 VALID_ACTION_KEYS = ['add_tag', 'delete_tag', 'update_name', 'update_description', 'update_status']
+__all__ = [
+    'incidents_get_crowdscores',
+    'incidents_perform_actions',
+    'incidents_get_details',
+    'incidents_behaviors_by_id',
+    'incidents_query_behaviors',
+    'incidents_query',
+    ]
 
+ACTION_KEYS = ('name', 'value') # keys used in the body of the incidents_perform_action call
 
 def incidents_get_crowdscores(self, **kwargs):
     """ Query environment wide CrowdScore and return the entity data """
@@ -40,9 +49,6 @@ def incidents_perform_actions(self, **kwargs):
     validate_kwargs(args_validation, kwargs, required=args_validation.keys())
 
     # start validation of the action/value body
-    # pylint: disable=invalid-name
-    ACTION_KEYS = ('name', 'value')
-
     for action in kwargs.get('action_parameters'):
         if not isinstance(action, dict):
             raise ValueError()
