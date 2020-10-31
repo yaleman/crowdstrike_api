@@ -4,6 +4,18 @@ from loguru import logger
 
 from .utilities import validate_kwargs
 
+__all__ = [
+    'incidents_get_crowdscores',
+    'incidents_perform_actions',
+    'incidents_get_details',
+    'incidents_behaviors_by_id',
+    'incidents_query_behaviors',
+    'incidents_query',
+    ]
+
+ACTION_KEYS = ('name', 'value') # keys used in the body of the incidents_perform_action call
+
+
 def incidents_get_crowdscores(self, **kwargs):
     """ Query environment wide CrowdScore and return the entity data """
     # uri = '/incidents/combined/crowdscores/v1'
@@ -22,7 +34,6 @@ def incidents_perform_actions(self, **kwargs):
     validate_kwargs(args_validation, kwargs, required=args_validation.keys())
 
     # validate action parameters
-    ACTION_KEYS = ('name', 'value')
 
     for action in kwargs.get('action_parameters'):
         if not isinstance(action, dict):
