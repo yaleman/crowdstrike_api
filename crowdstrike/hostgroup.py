@@ -31,7 +31,9 @@ def search_host_groups(self, **kwargs):
     Returns a set of Host Groups which match the filter criteria
 
     - filter (string) - The filter expression that should be used to limit the results
-        FQL can be case sensitive - ie it has to be in lower case...
+
+        *** FQL is case sensitive - ie it has to be in lower case ***
+
     - offset (integer) - The offset to start retrieving records from
     - limit (integer) - The maximum records to return. [1-5000]
     - sort (string) - field to sort by
