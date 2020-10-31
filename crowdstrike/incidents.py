@@ -33,7 +33,7 @@ def incidents_perform_actions(self, **kwargs):
         delete_tag - Deletes tags matching the value from all the incidents in the ids list
         update_name - Updates the name to the parameter value of all the incidents in the ids list.
         update_description - Updates the description to the parameter value of all the incidents listed in the ids.
-        update_status - Updates the status to the parameter value of all the incidents in the ids list. 
+        update_status - Updates the status to the parameter value of all the incidents in the ids list.
             Valid values for status are 20, 25, 30, 40: (also in crowdstrike.INCIDENT_STATUS_LOOKUP)
                 20: New
                 25: Reopened
