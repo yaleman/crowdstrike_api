@@ -5,6 +5,7 @@ from loguru import logger
 from .utilities import validate_kwargs
 
 VALID_ACTION_KEYS = ['add_tag', 'delete_tag', 'update_name', 'update_description', 'update_status']
+
 __all__ = [
     'incidents_get_crowdscores',
     'incidents_perform_actions',
