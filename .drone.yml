@@ -9,7 +9,8 @@ steps:
   - pip install --quiet pipenv
   - pipenv install --dev
   # W0511 = TODO
-  - pipenv run pylint --disable=W0511 crowdstrike 
+  # C0303 = Whitespace
+  - pipenv run pylint --disable=W0511,C0303 crowdstrike 
 - name: test1
   image: python:3.8
   commands:
