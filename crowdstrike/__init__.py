@@ -28,6 +28,13 @@ from .detects import get_detects, get_detections
 from .rtr import create_rtr_session, delete_rtr_session, rtr_execute_command, rtr_command_status, rtr_command_status_wait, list_rtr_session_ids
 from .rtr_admin import search_rtr_scripts, get_rtr_scripts
 
+from .intel import *
+try:
+    if isinstance(THIS_SHOULD_FAIL, bool):
+        raise Exception("__all__ is missing in a module")
+except Exception:
+    pass
+
 API_BASEURL = "https://api.crowdstrike.com"
 
 # if you want to enable logging then you can just run logger.enable("crowdstrike") in your code.
@@ -185,6 +192,9 @@ class CrowdstrikeAPI:
     get_host_groups = get_host_groups
     update_host_group = update_host_group
     delete_host_groups = delete_host_groups
+
+    # intel
+    get_intel_indicators = get_intel_indicators
 
     #rtr
     create_rtr_session = create_rtr_session
