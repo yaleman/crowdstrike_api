@@ -51,9 +51,9 @@ with open(SWAGGER_FILE) as fh:
 
 logger.info(f"Host: {SWAGGER_DATA.get('host')}")
 
-path_missing = 0
-path_ok = 0
-path_ok_method_missing = 0
+path_missing = 0 #pylint: disable=invalid-name
+path_ok = 0 #pylint: disable=invalid-name
+path_ok_method_missing = 0 #pylint: disable=invalid-name
 
 for path in SWAGGER_DATA.get('paths'):
     #logger.info(path)
