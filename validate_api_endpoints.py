@@ -51,6 +51,10 @@ with open(SWAGGER_FILE) as fh:
 
 logger.info(f"Host: {SWAGGER_DATA.get('host')}")
 
+path_missing = 0
+path_ok = 0
+path_ok_method_missing = 0
+
 for path in SWAGGER_DATA.get('paths'):
     #logger.info(path)
     pathdata = SWAGGER_DATA.get('paths').get(path)
@@ -59,7 +63,14 @@ for path in SWAGGER_DATA.get('paths'):
         if path in found_implementations:
             if pathmethod in found_implementations.get(path):
                 logger.info(f"[OK] {found_implementations[path][pathmethod]}() implements {path} : {pathmethod}")
+                path_ok += 1
             else:
                 logger.error(f"Path {path} found but not method {pathmethod}")
+                path_ok_method_missing += 1
         else:
             logger.error(f"Path not found {path} : {pathmethod}")
+            path_missing += 1
+
+logger.info(f"Path missing: {path_missing}")
+logger.info(f"Path has one or more methods missing: {path_ok_method_missing}")
+logger.info(f"Path OK with all methods covered: {path_ok}")
