@@ -1,7 +1,6 @@
 """ implements the various intel endpoint things """
 
 import json
-import time
 
 from loguru import logger
 

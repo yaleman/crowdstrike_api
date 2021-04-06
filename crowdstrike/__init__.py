@@ -31,9 +31,10 @@ from .rtr_admin import search_rtr_scripts, get_rtr_scripts
 from .intel import *
 try:
     if isinstance(THIS_SHOULD_FAIL, bool):
-        raise Exception("__all__ is missing in a module")
-except Exception:
-    pass
+        raise ValueError("__all__ is missing in a module")
+except ValueError: 
+    logger.error("__all__ is missing in a module")
+    sys.exit(1)
 
 API_BASEURL = "https://api.crowdstrike.com"
 
