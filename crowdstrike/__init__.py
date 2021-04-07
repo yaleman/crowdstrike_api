@@ -35,6 +35,9 @@ try:
 except ValueError: 
     logger.error("__all__ is missing in a module")
     sys.exit(1)
+except NameError:
+    # this is good
+    pass
 
 API_BASEURL = "https://api.crowdstrike.com"
 

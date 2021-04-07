@@ -131,9 +131,11 @@ def test_delete_host_groups(crowdstrike_client=crowdstrike):
     # clean up if the second update didn't work
     hostgroups = crowdstrike_client.search_host_groups(filter=f"name:'{TEST_GROUP_NAME_UPDATE.lower()}'").get('resources')
     logger.debug(hostgroups)
+    if not hostgroups:
+        logger.warning("couldn't find the host group name")
+        return True
     ids = [group.get('id') for group in hostgroups if group.get('id')]
     if ids not in (None, []):
-
         result = crowdstrike_client.delete_host_groups(ids=ids)
         logger.debug(result)
 

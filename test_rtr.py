@@ -81,7 +81,8 @@ def test_delete_rtr_session(crowdstrike_client=crowdstrike):
             logger.error(json.dumps(error, indent=4))
             # 40010 is "couldn't establish comms"
             # {'code': 40010, 'message': '{"code":40401,"message":"Could not establish sensor comms"}'}
-            if error.get('code') == 40010:
+            # {'code': 40401, 'message': 'Could not establish sensor comms'}
+            if error.get('code') in (40010,40401):
                 logger.warning("Couldn't establish sensor comms")
             else:
                 raise ValueError(f"Bad error came along: {error}")
@@ -116,6 +117,10 @@ def test_rtr_basic_ls(crowdstrike_client=crowdstrike):
     logger.debug(f"FQL Filter: {fql_filter}")
     host = crowdstrike_client.hosts_query_devices(filter=fql_filter, limit=1)
     logger.debug(host)
+
+    if not host.get('resources'):
+        logger.warning("No resources found, skipping test")
+        return
 
     device_id = host.get('resources')[0]
 
