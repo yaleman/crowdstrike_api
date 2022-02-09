@@ -1,6 +1,7 @@
-# Crowdstrike API
+* THIS IS NO LONGER UPDATED *
 
-[![Build Status (master)](https://droneio.yaleman.org/api/badges/yaleman/crowdstrike_api/status.svg)](https://droneio.yaleman.org/yaleman/crowdstrike_api)
+
+# Crowdstrike API
 
 Implements some of the functions to interface with the [Crowdstrike APIs](https://assets.falcon.crowdstrike.com/support/api/swagger.html).
 

@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "crowdstrike"
+version = "0.0.5"
+description = "Python interface to the Crowdstrike API"
+authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
+license = "MIT"
+readme = "README.md"
+
+homepage = "https://github.com/yaleman/crowdstrike_api"
+repository = "https://github.com/yaleman/crowdstrike_api"
+
+keywords = [
+    "api",
+    "crowdstrike",
+]
+
+classifiers=[
+        "Development Status :: 4 - Beta",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+requests-oauthlib = "^1.3.1"
+loguru = "^0.6.0"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.12.2"
+mypy = "^0.931"
+black = "^22.1.0"
+pytest = "^6.2.5"
+types-requests = "^2.27.8"
+
+requests-testing = "^0.2.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
